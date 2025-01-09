@@ -94,3 +94,4 @@ flutter:
 assets:
   - assets/data/datauser.json
   - assets/images/logo.png
+  - assets/images/
