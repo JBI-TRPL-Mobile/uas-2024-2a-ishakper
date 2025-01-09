@@ -1,0 +1,10 @@
+[
+    {
+        "id": 1,
+        "name": "Ishak Hadi Pernama",
+        "email": "ishakhadipernama@gmail.com",
+        "password": "12345",
+        "categories": ["Development", "IT & Software", "Business"],
+        "top_courses": ["Flutter Basics", "Advanced Flutter"]
+    }
+]
