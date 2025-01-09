@@ -9,7 +9,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'My App',
-      home: HomeScreen(),
+      theme: ThemeData(
+        primarySwatch: Colors.yellow,
+        colorScheme: ColorScheme.fromSwatch().copyWith(
+          secondary: Colors.amber,
+        ),
+      ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomeScreen(),
+        '/messages': (context) => MessageScreen(),
+      },
     );
   }
 }
@@ -32,9 +42,14 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 1) {
+      // Navigasi ke MessageScreen
+      Navigator.pushNamed(context, '/messages');
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
@@ -42,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome $userName', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.yellow,
         elevation: 0,
       ),
       body: _widgetOptions.elementAt(_selectedIndex),
@@ -54,8 +69,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
+            icon: Icon(Icons.message),
+            label: 'Messages',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.local_activity),
@@ -71,7 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.yellow[700],
+        selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
@@ -88,27 +103,35 @@ class HomeContent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            height: 200,
+            height: 180,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
-              border: Border.all(color: Colors.grey),
+              color: Colors.yellow[100],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.0),
-              child: Image.asset("assets/images/banner.jpg", fit: BoxFit.cover),
+            child: Center(
+              child: Text("Banner Image Placeholder",
+                  style: TextStyle(fontSize: 16, color: Colors.grey)),
             ),
           ),
           SizedBox(height: 16),
-          Text("Keep Moving Up", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-          Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+          Text("Keep Moving Up",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text("Semangat semangat yang semangat dwonggg.",
               style: TextStyle(color: Colors.grey)),
           SizedBox(height: 24),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Categories", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              Text("See All", style: TextStyle(color: Colors.grey)),
+              Text("Categories",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/messages');
+                },
+                child: Text("See All",
+                    style: TextStyle(color: Colors.grey, fontSize: 16)),
+              ),
             ],
           ),
           SizedBox(height: 16),
@@ -116,26 +139,26 @@ class HomeContent extends StatelessWidget {
             spacing: 8.0,
             runSpacing: 8.0,
             children: [
-              CategoryButton(label: "Development", imagePath: "assets/images/development.jpg"),
-              CategoryButton(label: "IT & Software", imagePath: "assets/images/it.jpg"),
-              CategoryButton(label: "UX/UI", imagePath: "assets/images/uxui.jpg"),
-              CategoryButton(label: "Business", imagePath: "assets/images/business.jpg"),
-              CategoryButton(label: "Finance & Banking", imagePath: "assets/images/finance.jpg"),
-              CategoryButton(label: "Design", imagePath: "assets/images/design.jpg"),
+              CategoryButton(label: "Development"),
+              CategoryButton(label: "IT & Software"),
+              CategoryButton(label: "UX/UI"),
+              CategoryButton(label: "Business"),
+              CategoryButton(label: "Finance & Banking"),
+              CategoryButton(label: "Design"),
             ],
           ),
           SizedBox(height: 24),
-          Text("Top Courses", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text("Top Courses",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           SizedBox(height: 16),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                CoursePlaceholder(imagePath: "assets/images/page1.jpg"),
-                CoursePlaceholder(imagePath: "assets/images/page2.jpg"),
-                CoursePlaceholder(imagePath: "assets/images/page3.jpg"),
-                CoursePlaceholder(imagePath: "assets/images/page4.jpg"),
-                CoursePlaceholder(imagePath: "assets/images/page5.jpg"),
+                CoursePlaceholder(),
+                CoursePlaceholder(),
+                CoursePlaceholder(),
+                CoursePlaceholder(),
               ],
             ),
           ),
@@ -147,54 +170,59 @@ class HomeContent extends StatelessWidget {
 
 class CategoryButton extends StatelessWidget {
   final String label;
-  final String imagePath;
 
-  const CategoryButton({Key? key, required this.label, required this.imagePath})
-      : super(key: key);
+  const CategoryButton({Key? key, required this.label}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.asset(
-            imagePath,
-            width: 60,
-            height: 60,
-            fit: BoxFit.cover,
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.yellow[200],
+            borderRadius: BorderRadius.circular(12),
           ),
+          child: Icon(Icons.category, size: 30, color: Colors.black),
         ),
         SizedBox(height: 4),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 12),
-        ),
+        Text(label, textAlign: TextAlign.center, style: TextStyle(fontSize: 12)),
       ],
     );
   }
 }
 
 class CoursePlaceholder extends StatelessWidget {
-  final String imagePath;
-
-  const CoursePlaceholder({Key? key, required this.imagePath})
-      : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(right: 10),
-      height: 150,
+      height: 120,
       width: 100,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
+        color: Colors.yellow[100],
         borderRadius: BorderRadius.circular(8.0),
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(8.0),
-        child: Image.asset(imagePath, fit: BoxFit.cover),
+      child: Center(
+        child: Text("Course Image",
+            style: TextStyle(fontSize: 12, color: Colors.grey)),
+      ),
+    );
+  }
+}
+
+class MessageScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Messages', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.yellow,
+        elevation: 0,
+      ),
+      body: Center(
+        child: Text("Message Screen Content"),
       ),
     );
   }

@@ -4,5 +4,4 @@ class User {
   final String password;
 
   User({required this.fullName, required this.email, required this.password});
-
 }

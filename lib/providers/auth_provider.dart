@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../services/json_service.dart';
 import 'dart:convert';
+import 'package:path_provider/path_provider.dart'; // Import path_provider
+import 'dart:io';
 
 class AuthProvider with ChangeNotifier {
   User? _currentUser;
@@ -10,7 +12,27 @@ class AuthProvider with ChangeNotifier {
   User? get currentUser => _currentUser;
 
   Future<void> signIn(String email, String password) async {
-    // ... (Kode sign in sebelumnya)
+    try {
+      final dataUser = await _jsonService.loadJson('assets/data/datauser.json');
+      List<dynamic> users = dataUser['users'] ?? [];
+
+      final user = users.firstWhere(
+          (user) => user['email'] == email && user['password'] == password,
+          orElse: () => null);
+
+      if (user != null) {
+        _currentUser = User(
+            fullName: user['fullName'],
+            email: user['email'],
+            password: user['password']);
+        notifyListeners();
+      } else {
+        throw Exception('Email atau password salah');
+      }
+    } catch (e) {
+      print('Error during sign in: $e');
+      rethrow;
+    }
   }
 
   Future<void> signUp(String fullName, String email, String password) async {
@@ -18,7 +40,6 @@ class AuthProvider with ChangeNotifier {
       final dataUser = await _jsonService.loadJson('assets/data/datauser.json');
       List<dynamic> users = dataUser['users'] ?? [];
 
-      //Check if email is already registered
       if (users.any((user) => user['email'] == email)) {
         throw Exception('Email sudah terdaftar');
       }
@@ -29,23 +50,25 @@ class AuthProvider with ChangeNotifier {
         'password': password,
       });
 
-      // Encode kembali ke JSON
       final updatedJson = jsonEncode({'users': users});
-      // Menulis ke file (perlu package path_provider)
-      // Ini bagian yang perlu penyesuaian untuk menulis ke file statis,
-      // Karena flutter web tidak bisa menulis ke file di browser.
-      // Solusinya bisa menggunakan package shared_preferences atau
-      // menyimpan data di server jika aplikasinya web base.
 
-      // Contoh print ke console
-      print(updatedJson);
+      // Mendapatkan direktori aplikasi
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File('${directory.path}/datauser.json');
+
+      // Menulis data ke file
+      await file.writeAsString(updatedJson);
 
       _currentUser = User(fullName: fullName, email: email, password: password);
       notifyListeners();
     } catch (e) {
       print('Error during sign up: $e');
-      rethrow; // Re-throw exception agar dapat ditangani di UI
+      rethrow;
     }
   }
 
+  void signOut() {
+    _currentUser = null;
+    notifyListeners();
+  }
 }

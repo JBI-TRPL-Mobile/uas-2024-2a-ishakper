@@ -3,8 +3,12 @@ import 'package:flutter/services.dart';
 
 class JsonService {
   Future<Map<String, dynamic>> loadJson(String path) async {
-    final String response = await rootBundle.loadString(path);
-    final data = await json.decode(response);
-    return data;
+    try {
+      String jsonString = await rootBundle.loadString(path);
+      return jsonDecode(jsonString);
+    } catch (e) {
+      print('Error loading JSON: $e');
+      return {}; // Return empty map in case of error
+    }
   }
 }
